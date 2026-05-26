@@ -1,0 +1,11 @@
+/* Reset CSS cơ bản */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #141414; /* Màu nền đen chuẩn của trang phim */
+  font-family: Arial, sans-serif;
+}
