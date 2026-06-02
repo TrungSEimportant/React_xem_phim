@@ -6,6 +6,7 @@ import MovieDetail from './pages/MovieDetail';
 import Login from './pages/Login';
 
 function App() {
+  
   const [user, setUser] = useState(null);
   const [currentPage, setCurrentPage] = useState('home');
   const [selectedMovieId, setSelectedMovieId] = useState(null);
@@ -20,6 +21,7 @@ function App() {
   };
 
   return (
+    
     <div style={{ backgroundColor: '#141414', color: '#fff', minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
       <Navbar 
         user={user} 
