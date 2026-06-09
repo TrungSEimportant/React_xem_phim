@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import MovieDetail from './pages/MovieDetail';
 import Login from './pages/Login';
+import BookingHistory from './pages/BookingHistory';
 
 function App() {
   
@@ -47,6 +48,11 @@ function App() {
         
         {currentPage === 'login' && (
           <Login setUser={setUser} navigateTo={navigateTo} />
+        )}
+
+        {/* THÊM TRANG LỊCH SỬ ĐẶT VÉ VÀO ĐÂY */}
+        {currentPage === 'history' && (
+          <BookingHistory user={user} navigateTo={navigateTo} />
         )}
       </main>
     </div>

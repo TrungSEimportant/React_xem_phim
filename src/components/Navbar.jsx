@@ -3,15 +3,14 @@ import React from 'react';
 
 function Navbar({ user, setUser, setSearchQuery, navigateTo, activeSection, setActiveSection }) {
   
-  // Hàm tiện ích để đổi tab nhanh
   const handleTabClick = (sectionName) => {
-    setSearchQuery(''); // Xóa từ khóa tìm kiếm khi đổi tab
+    setSearchQuery(''); 
     setActiveSection(sectionName);
     navigateTo('home');
   };
 
   return (
-    <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 40px', backgroundColor: '#000', borderBottom: '1px solid #222', sticky: 'top', zIndex: 100 }}>
+    <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 40px', backgroundColor: '#000', borderBottom: '1px solid #222', position: 'sticky', top: 0, zIndex: 100 }}>
       
       {/* PHẦN 1: LOGO & MENU ĐIỀU HƯỚNG */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '30px' }}>
@@ -22,23 +21,28 @@ function Navbar({ user, setUser, setSearchQuery, navigateTo, activeSection, setA
           NETFLUX
         </h1>
         
-        {/* THANH MENU ĐIỀU HƯỚNG MỚI */}
         <div style={{ display: 'flex', gap: '20px', fontSize: '14px' }}>
           <span 
             onClick={() => handleTabClick('all')} 
-            style={{ cursor: 'pointer', color: activeSection === 'all' ? '#fff' : '#aaa', fontWeight: activeSection === 'all' ? 'bold' : 'normal' }}
+            style={{ color: activeSection === 'all' ? '#fff' : '#aaa', cursor: 'pointer', fontWeight: activeSection === 'all' ? 'bold' : 'normal' }}
           >
-            Trang chủ
+            Trang Chủ
+          </span>
+          <span 
+            onClick={() => handleTabClick('hot')} 
+            style={{ color: activeSection === 'hot' ? '#fff' : '#aaa', cursor: 'pointer', fontWeight: activeSection === 'hot' ? 'bold' : 'normal' }}
+          >
+            Phim Hot
           </span>
           <span 
             onClick={() => handleTabClick('new')} 
-            style={{ cursor: 'pointer', color: activeSection === 'new' ? '#fff' : '#aaa', fontWeight: activeSection === 'new' ? 'bold' : 'normal' }}
+            style={{ color: activeSection === 'new' ? '#fff' : '#aaa', cursor: 'pointer', fontWeight: activeSection === 'new' ? 'bold' : 'normal' }}
           >
             Phim Mới
           </span>
           <span 
             onClick={() => handleTabClick('upcoming')} 
-            style={{ cursor: 'pointer', color: activeSection === 'upcoming' ? '#fff' : '#aaa', fontWeight: activeSection === 'upcoming' ? 'bold' : 'normal' }}
+            style={{ color: activeSection === 'upcoming' ? '#fff' : '#aaa', cursor: 'pointer', fontWeight: activeSection === 'upcoming' ? 'bold' : 'normal' }}
           >
             Sắp Chiếu
           </span>
@@ -58,15 +62,24 @@ function Navbar({ user, setUser, setSearchQuery, navigateTo, activeSection, setA
         />
       </div>
 
-      {/* PHẦN 3: ĐĂNG NHẬP */}
+      {/* PHẦN 3: ĐĂNG NHẬP & LỊCH SỬ VÉ */}
       <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
         {user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <span>Xin chào, <strong>{user.name}</strong></span>
+            <span style={{ color: '#fff' }}>Xin chào, <strong>{user.name}</strong></span>
+            
+            {/* NÚT XEM LỊCH SỬ MỚI THÊM VÀO */}
+            <button 
+              onClick={() => navigateTo('history')} 
+              style={{ background: '#444', color: '#fff', border: 'none', padding: '8px 16px', cursor: 'pointer', borderRadius: '4px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '5px' }}
+            >
+              📜 Lịch sử đặt vé
+            </button>
+
             <button onClick={() => setUser(null)} style={{ background: '#333', color: '#fff', border: 'none', padding: '8px 16px', cursor: 'pointer', borderRadius: '4px' }}>Đăng xuất</button>
           </div>
         ) : (
-          <button onClick={() => navigateTo('login')} style={{ background: '#E50914', color: '#fff', border: 'none', padding: '8px 24px', cursor: 'pointer', fontWeight: 'bold', borderRadius: '4px' }}>Đăng nhập</button>
+          <button onClick={() => navigateTo('login')} style={{ background: '#E50914', color: '#fff', border: 'none', padding: '8px 18px', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold' }}>Đăng nhập</button>
         )}
       </div>
 
