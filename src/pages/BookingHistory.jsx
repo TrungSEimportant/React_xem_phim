@@ -15,12 +15,12 @@ function BookingHistory({ user, navigateTo }) {
   }, [user]);
 
   return (
-    <div style={{ padding: '40px', color: '#fff', backgroundColor: '#141414', minHeight: '100vh', maxWidth: '1100px', margin: '0 auto' }}>
+    <div style={{ padding: '40px', color: '#fff', backgroundColor: '#141414', minHeight: '100vh', maxWidth: '1100px', margin: '0 auto', fontFamily: "'Segoe UI', Roboto, sans-serif" }}>
       
       {/* Nút quay về trang chủ */}
       <button 
         onClick={() => navigateTo('home')} 
-        style={{ background: 'transparent', color: '#aaa', border: '1px solid #555', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', marginBottom: '20px' }}>
+        style={{ background: 'transparent', color: '#aaa', border: '1px solid #555', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', marginBottom: '20px', fontFamily: 'inherit' }}>
         ⬅ Quay lại Trang chủ
       </button>
 
@@ -33,7 +33,7 @@ function BookingHistory({ user, navigateTo }) {
           <p style={{ color: '#aaa', fontSize: '18px', margin: '0 0 20px 0' }}>Bạn chưa có lịch sử giao dịch đặt vé nào.</p>
           <button 
             onClick={() => navigateTo('home')} 
-            style={{ background: '#E50914', color: '#fff', border: 'none', padding: '12px 30px', fontWeight: 'bold', borderRadius: '4px', cursor: 'pointer' }}
+            style={{ background: '#E50914', color: '#fff', border: 'none', padding: '12px 30px', fontWeight: 'bold', borderRadius: '4px', cursor: 'pointer', fontFamily: 'inherit' }}
           >
             Đặt vé phim ngay
           </button>
@@ -57,8 +57,12 @@ function BookingHistory({ user, navigateTo }) {
                 <h3 style={{ margin: '0 0 10px 0', color: '#E50914', fontSize: '22px' }}>{ticket.movieTitle}</h3>
                 <p style={{ margin: '5px 0', color: '#ccc' }}>🔖 Mã hóa đơn: <strong style={{ color: '#fff' }}>{ticket.id}</strong></p>
                 <p style={{ margin: '5px 0', color: '#ccc' }}>Ngày thanh toán: <span>{ticket.bookingDate}</span></p>
+                
+                {/* THÀNH PHẦN MỚI: HIỂN THỊ PHƯƠNG THỨC THANH TOÁN */}
+                <p style={{ margin: '5px 0', color: '#ccc' }}> Phương thức: <span style={{ color: '#2196F3', fontWeight: 'bold' }}>{ticket.paymentMethod || 'Chuyển khoản'}</span></p>
+                
                 <p style={{ margin: '5px 0', color: '#ccc' }}>Suất chiếu: <span style={{ color: '#fff', fontWeight: 'bold' }}>{ticket.showtime}</span></p>
-                <p style={{ margin: '5px 0', color: '#ccc' }}>Số ghế đã chọn: <span style={{ color: '#fff', fontWeight: 'bold', background: '#333', padding: '2px 8px', borderRadius: '4px' }}>{ticket.seats.join(', ')}</span></p>
+                <p style={{ margin: '5px 0', color: '#ccc' }}>Số ghế đã chọn: <span style={{ color: '#fff', fontWeight: 'bold', background: '#333', padding: '2px 8px', borderRadius: '4px' }}>{Array.isArray(ticket.seats) ? ticket.seats.join(', ') : ticket.seats}</span></p>
                 <p style={{ margin: '5px 0', color: '#ccc' }}>Bắp & Nước: <span>{ticket.comboCount > 0 ? `${ticket.comboCount} Combo` : 'Không kèm combo'}</span></p>
               </div>
 

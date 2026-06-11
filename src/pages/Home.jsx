@@ -1,27 +1,17 @@
 import React, { useMemo } from 'react';
-import { MOCK_MOVIES } from '../data/mockMovies';
-
-function Home({ searchQuery, navigateTo, activeSection }) {
-  
-  // 1. Lọc phim theo từ khóa tìm kiếm (nếu có)
-  const searchedMovies = MOCK_MOVIES.filter(movie => 
+function Home({ movies, searchQuery, navigateTo, activeSection }) {
+  const searchedMovies = movies.filter(movie => 
     movie.title.toLowerCase().includes(searchQuery?.toLowerCase() || '')
   );
 
-  // Phân loại danh sách phim theo section
-  const hotMovies = MOCK_MOVIES.filter(m => m.section === 'hot');
-  const newMovies = MOCK_MOVIES.filter(m => m.section === 'new');
-  const upcomingMovies = MOCK_MOVIES.filter(m => m.section === 'upcoming');
+  const hotMovies = movies.filter(m => m.section === 'hot');
+  const newMovies = movies.filter(m => m.section === 'new');
+  const upcomingMovies = movies.filter(m => m.section === 'upcoming');
 
-  // Tự động chọn ngẫu nhiên 1 bộ phim đặc sắc từ danh mục "Hot" để làm Banner chính
   const featuredMovie = useMemo(() => {
-    if (hotMovies.length > 0) {
-      // Bạn có thể dùng hàm ngẫu nhiên hoặc chọn cố định bộ phim đầu tiên
-      const randomIndex = Math.floor(Math.random() * hotMovies.length);
-      return hotMovies[randomIndex];
-    }
-    return MOCK_MOVIES[10];
-  }, [hotMovies]);
+    if (hotMovies.length > 0) return hotMovies[0];
+    return movies[0];
+  }, [hotMovies, movies]);
 
   // 2. THIẾT KẾ HERO BANNER TOÀN MÀN HÌNH (Style Ảnh 2)
   const renderHeroBanner = () => {

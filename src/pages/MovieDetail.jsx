@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { MOCK_MOVIES } from '../data/mockMovies';
 import VideoPlayer from '../components/VideoPlayer';
 import Booking from './Booking'; 
 
-function MovieDetail({ movieId, user, navigateTo }) {
+function MovieDetail({ movieId, user, navigateTo , movies }) {
   const [isBooking, setIsBooking] = useState(false);
 
-  const movie = MOCK_MOVIES.find(m => m.id === movieId);
+  const movie = movies.find(m => m.id === movieId);
 
   if (!movie) {
     return <h2 style={{ color: '#fff', textAlign: 'center', marginTop: '100px' }}>Không tìm thấy thông tin phim.</h2>;
