@@ -166,7 +166,7 @@ function Booking({ movie, user, onCancel, onSuccess }) {
 
       {/* CỘT BÊN PHẢI: CHI TIẾT HÓA ĐƠN & PHƯƠNG THỨC THANH TOÁN */}
       <div style={{ flex: 1, background: '#1c1c1c', padding: '30px', borderRadius: '8px', height: 'fit-content', border: '1px solid #292929' }}>
-        <h3 style={{ margin: '0 0 20px 0', textAlign: 'center', letterSpacing: '1px', borderBottom: '2px solid #333', paddingBottom: '15px', color: '#fff' }}>💳 HÓA ĐƠN ĐẶT VÉ</h3>
+        <h3 style={{ margin: '0 0 20px 0', textAlign: 'center', letterSpacing: '1px', borderBottom: '2px solid #333', paddingBottom: '15px', color: '#fff' }}> HÓA ĐƠN ĐẶT VÉ</h3>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', color: '#ccc' }}>
           <span>Phim:</span> <span style={{ fontWeight: 'bold', color: '#fff', textAlign: 'right', maxWidth: '180px' }}>{movie.title}</span>
@@ -187,7 +187,7 @@ function Booking({ movie, user, onCancel, onSuccess }) {
         {/* ===== THÀNH PHẦN MỚI THÊM: CHỌN PHƯƠNG THỨC THANH TOÁN ===== */}
         <div style={{ borderTop: '1px dashed #333', paddingTop: '20px', marginBottom: '15px' }}>
           <label style={{ color: '#aaa', fontSize: '13px', display: 'block', marginBottom: '10px', fontWeight: '500' }}>
-            💵 CHỌN PHƯƠNG THỨC THANH TOÁN:
+            CHỌN PHƯƠNG THỨC THANH TOÁN:
           </label>
           <div style={{ display: 'flex', gap: '10px' }}>
             <button
