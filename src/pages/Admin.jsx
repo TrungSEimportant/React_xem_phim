@@ -4,7 +4,16 @@ import React, { useState, useEffect } from 'react';
 function Admin({ user, movies, setMovies, navigateTo }) {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [bookings, setBookings] = useState([]);
-  const [newMovie, setNewMovie] = useState({ title: '', category: '', section: 'new', videoUrl: '' });
+  
+  // SỬA Ở ĐÂY: Khởi tạo thêm trường thumbnail và description cho khớp với mockMovies
+  const [newMovie, setNewMovie] = useState({ 
+    title: '', 
+    category: '', 
+    section: 'new', 
+    videoUrl: '',
+    thumbnail: '',
+    description: '' 
+  });
   
   // State phục vụ việc chọn xem chi tiết một Người dùng cụ thể
   const [selectedUser, setSelectedUser] = useState(null);
@@ -53,13 +62,21 @@ function Admin({ user, movies, setMovies, navigateTo }) {
     </div>
   );
 
-  // ==================== 2. RENDER QUẢN LÝ PHIM ====================
+  // ==================== 2. RENDER QUẢN LÝ PHIM (ĐÃ CHỈNH SỬA) ====================
   const renderMovies = () => {
     const handleAddMovie = () => {
-      if (!newMovie.title) return alert('Vui lòng nhập tên phim!');
-      const movieToAdd = { ...newMovie, id: Date.now().toString(), showtimes: ["10:00", "14:00", "19:00"] };
+      // Yêu cầu nhập ít nhất tên phim và ID Youtube
+      if (!newMovie.title || !newMovie.videoUrl) return alert('Vui lòng nhập ít nhất tên phim và ID YouTube!');
+      
+      const movieToAdd = { 
+        ...newMovie, 
+        id: Date.now().toString(), 
+        showtimes: ["10:00", "14:00", "19:00"] 
+      };
+      
       handleSaveMovies([movieToAdd, ...movies]);
-      setNewMovie({ title: '', category: '', section: 'new', videoUrl: '' });
+      // Reset lại form
+      setNewMovie({ title: '', category: '', section: 'new', videoUrl: '', thumbnail: '', description: '' });
     };
 
     const handleDelete = (id) => {
@@ -68,23 +85,40 @@ function Admin({ user, movies, setMovies, navigateTo }) {
       }
     };
 
+    const inputStyle = { padding: '8px 12px', background: '#333', color: '#fff', border: 'none', borderRadius: '4px', flex: 1, fontFamily: 'inherit' };
+
     return (
       <div style={{ fontFamily: "'Segoe UI', Roboto, sans-serif" }}>
         <h2 style={{ borderBottom: '1px solid #333', paddingBottom: '10px' }}>🎬 Quản Lý Thông Tin Phim</h2>
-        <div style={{ background: '#222', padding: '15px', borderRadius: '8px', marginBottom: '20px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-          <input placeholder="Tên phim..." value={newMovie.title} onChange={e => setNewMovie({...newMovie, title: e.target.value})} style={{ padding: '8px 12px', background: '#333', color: '#fff', border: 'none', borderRadius: '4px', flex: 1, fontFamily: 'inherit' }} />
-          <input placeholder="Thể loại..." value={newMovie.category} onChange={e => setNewMovie({...newMovie, category: e.target.value})} style={{ padding: '8px 12px', background: '#333', color: '#fff', border: 'none', borderRadius: '4px', flex: 1, fontFamily: 'inherit' }} />
-          <input placeholder="ID YouTube Trailer..." value={newMovie.videoUrl} onChange={e => setNewMovie({...newMovie, videoUrl: e.target.value})} style={{ padding: '8px 12px', background: '#333', color: '#fff', border: 'none', borderRadius: '4px', flex: 1, fontFamily: 'inherit' }} />
-          <select value={newMovie.section} onChange={e => setNewMovie({...newMovie, section: e.target.value})} style={{ padding: '8px', background: '#333', color: '#fff', border: 'none', borderRadius: '4px', fontFamily: 'inherit' }}>
-            <option value="hot">Phim Hot</option>
-            <option value="new">Phim Mới</option>
-          </select>
-          <button onClick={handleAddMovie} style={{ padding: '8px 16px', background: '#4CAF50', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontFamily: 'inherit' }}>+ Thêm Phim</button>
+        
+        {/* KHUNG NHẬP LIỆU THÊM PHIM MỚI */}
+        <div style={{ background: '#222', padding: '15px', borderRadius: '8px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          
+          {/* Dòng 1 */}
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <input placeholder="Tên phim..." value={newMovie.title} onChange={e => setNewMovie({...newMovie, title: e.target.value})} style={inputStyle} />
+            <input placeholder="Thể loại..." value={newMovie.category} onChange={e => setNewMovie({...newMovie, category: e.target.value})} style={inputStyle} />
+            <input placeholder="ID YouTube Trailer..." value={newMovie.videoUrl} onChange={e => setNewMovie({...newMovie, videoUrl: e.target.value})} style={inputStyle} />
+            <input placeholder="Link Ảnh bìa (Thumbnail)..." value={newMovie.thumbnail} onChange={e => setNewMovie({...newMovie, thumbnail: e.target.value})} style={inputStyle} />
+          </div>
+
+          {/* Dòng 2 */}
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <input placeholder="Mô tả phim..." value={newMovie.description} onChange={e => setNewMovie({...newMovie, description: e.target.value})} style={{ ...inputStyle, flex: 2 }} />
+            <select value={newMovie.section} onChange={e => setNewMovie({...newMovie, section: e.target.value})} style={{ padding: '8px', background: '#333', color: '#fff', border: 'none', borderRadius: '4px', fontFamily: 'inherit' }}>
+              <option value="hot">Phim Hot</option>
+              <option value="new">Phim Mới</option>
+              <option value="upcoming">Sắp Chiếu</option>
+            </select>
+            <button onClick={handleAddMovie} style={{ padding: '8px 20px', background: '#4CAF50', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontFamily: 'inherit' }}>+ Thêm Phim</button>
+          </div>
+          
         </div>
 
         <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '2px solid #444', color: '#aaa', background: '#111' }}>
+              <th style={{ padding: '14px 16px', width: '100px' }}>Hình ảnh</th>
               <th style={{ padding: '14px 16px' }}>Tên Phim</th>
               <th style={{ padding: '14px 16px' }}>Thể loại</th>
               <th style={{ padding: '14px 16px' }}>Chuyên mục</th>
@@ -94,9 +128,16 @@ function Admin({ user, movies, setMovies, navigateTo }) {
           <tbody>
             {movies.map(m => (
               <tr key={m.id} style={{ borderBottom: '1px solid #333' }}>
+                <td style={{ padding: '14px 16px' }}>
+                  <img src={m.thumbnail || 'https://via.placeholder.com/80x45?text=No+Image'} alt={m.title} style={{ width: '80px', height: '45px', objectFit: 'cover', borderRadius: '4px' }} />
+                </td>
                 <td style={{ padding: '14px 16px', fontWeight: 'bold', color: '#fff' }}>{m.title}</td>
                 <td style={{ padding: '14px 16px' }}>{m.category}</td>
-                <td style={{ padding: '14px 16px' }}><span style={{ background: '#333', padding: '4px 8px', borderRadius: '12px', fontSize: '12px' }}>{m.section === 'hot' ? '🔥 HOT' : '✨ MỚI'}</span></td>
+                <td style={{ padding: '14px 16px' }}>
+                  <span style={{ background: '#333', padding: '4px 8px', borderRadius: '12px', fontSize: '12px' }}>
+                    {m.section === 'hot' ? '🔥 HOT' : m.section === 'upcoming' ? '⏳ SẮP CHIẾU' : '✨ MỚI'}
+                  </span>
+                </td>
                 <td style={{ padding: '14px 16px' }}>
                   <button onClick={() => handleDelete(m.id)} style={{ background: '#E50914', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontFamily: 'inherit' }}>Xóa</button>
                 </td>
@@ -108,7 +149,7 @@ function Admin({ user, movies, setMovies, navigateTo }) {
     );
   };
 
-  // ==================== 3. RENDER QUẢN LÝ NGƯỜI DÙNG (CẬP NHẬT PHƯƠNG THỨC THANH TOÁN) ====================
+  // ==================== 3. RENDER QUẢN LÝ NGƯỜI DÙNG ====================
   const renderUsers = () => {
     if (selectedUser) {
       const userBookings = bookings.filter(b => b.username === selectedUser);
@@ -151,10 +192,7 @@ function Admin({ user, movies, setMovies, navigateTo }) {
                       <th style={{ padding: '14px 16px' }}>Ghế đã đặt</th>
                       <th style={{ padding: '14px 16px' }}>Số lượng</th>
                       <th style={{ padding: '14px 16px' }}>Tổng tiền</th>
-                      
-                      {/* === CỘT MỚI THÊM: PHƯƠNG THỨC THANH TOÁN === */}
                       <th style={{ padding: '14px 16px' }}>Phương thức</th>
-                      
                       <th style={{ padding: '14px 16px' }}>Ngày đặt</th>
                       <th style={{ padding: '14px 16px' }}>Trạng thái</th>
                     </tr>
@@ -173,12 +211,9 @@ function Admin({ user, movies, setMovies, navigateTo }) {
                         </td>
                         <td style={{ padding: '14px 16px', color: '#ccc' }}>{b.seats ? b.seats.length : 0} vé</td>
                         <td style={{ padding: '14px 16px', color: '#4CAF50', fontWeight: 'bold' }}>{(b.totalPrice || 0).toLocaleString('vi-VN')} đ</td>
-                        
-                        {/* === Ô HIỂN THỊ PHƯƠNG THỨC THANH TOÁN CỦA HÓA ĐƠN === */}
                         <td style={{ padding: '14px 16px', color: '#2196F3', fontWeight: 'bold' }}>
                           {b.paymentMethod || 'Chuyển khoản'}
                         </td>
-                        
                         <td style={{ padding: '14px 16px', color: '#ccc' }}>{b.bookingDate || new Date().toLocaleDateString('vi-VN')}</td>
                         <td style={{ padding: '14px 16px' }}>
                           <span style={{ backgroundColor: 'rgba(76, 175, 80, 0.15)', color: '#4CAF50', border: '1px solid #4CAF50', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', display: 'inline-block' }}>

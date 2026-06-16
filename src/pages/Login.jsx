@@ -16,26 +16,54 @@ function Login({ setUser, navigateTo }) {
       return setErrorMsg("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!");
     }
 
+    // Lấy danh sách người dùng đã đăng ký (lưu tạm trong localStorage)
+    const existingUsers = JSON.parse(localStorage.getItem('netflix_users')) || [];
+
     if (!isLogin) {
+      // ================= LOGIC ĐĂNG KÝ =================
       if (password !== confirmPassword) {
         return setErrorMsg("Mật khẩu nhập lại không khớp. Vui lòng kiểm tra lại!");
       }
-      alert("🎉 Đăng ký thành công! Hệ thống sẽ tự động đăng nhập.");
-      setUser({ name: username, role: 'user' });
-      navigateTo('home');
+
+      // Kiểm tra xem user này đã tồn tại chưa
+      const isUserExist = existingUsers.some(u => u.username === username);
+      if (isUserExist) {
+        return setErrorMsg("Tên đăng nhập này đã tồn tại. Vui lòng chọn tên khác!");
+      }
+
+      // Lưu tài khoản mới
+      existingUsers.push({ username, password });
+      localStorage.setItem('netflix_users', JSON.stringify(existingUsers));
+
+      alert("🎉 Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.");
+      setIsLogin(true); // Chuyển giao diện về form đăng nhập
+      setPassword('');
+      setConfirmPassword('');
+
     } else {
-      // KIỂM TRA QUYỀN ADMIN
+      // ================= LOGIC ĐĂNG NHẬP =================
+      
+      // KIỂM TRA QUYỀN ADMIN (Giữ nguyên theo yêu cầu của bạn)
       if (username === 'admin' && password === 'admin') {
         setUser({ name: 'Quản Trị Viên', role: 'admin' });
         navigateTo('admin');
-      } else {
+        return; // Dừng hàm tại đây để không chạy xuống phần check user
+      } 
+      
+      // KIỂM TRA QUYỀN USER BÌNH THƯỜNG (Đối chiếu với localStorage)
+      const matchedUser = existingUsers.find(
+        u => u.username === username && u.password === password
+      );
+
+      if (matchedUser) {
         setUser({ name: username, role: 'user' });
         navigateTo('home');
+      } else {
+        setErrorMsg("Tài khoản không tồn tại hoặc sai mật khẩu. Vui lòng đăng ký trước!");
       }
     }
   };
 
-  // ... (Giữ nguyên phần UI form bên dưới của bạn)
   return (
     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '100px' }}>
       <div style={{ background: '#000', padding: '60px', borderRadius: '8px', width: '100%', maxWidth: '400px', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>
