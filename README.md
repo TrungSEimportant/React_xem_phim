@@ -19,7 +19,7 @@ node <tên-file-chính>.js  # Ví dụ: server.js``
 
 ---
 
-##4. Khởi chạy Frontend (ReactJS)
+## 4. Khởi chạy Frontend (ReactJS)
 Mở terminal mới tại thư mục Frontend và chạy:
 `npm install`
 `npm start ` `Hoặc npm run dev nếu dùng Vite`
