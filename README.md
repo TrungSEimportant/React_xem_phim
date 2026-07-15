@@ -17,8 +17,9 @@ Mở terminal tại thư mục Backend và chạy:
 ``npm install express mysql2 cors
 node <tên-file-chính>.js  # Ví dụ: server.js``
 
-```bash
-npm install express mysql2 cors
-node <tên-file-chính>.js  # Ví dụ: server.js
+---
+
 ##4. Khởi chạy Frontend (ReactJS)
 Mở terminal mới tại thư mục Frontend và chạy:
+`npm install`
+`npm start ` `Hoặc npm run dev nếu dùng Vite`
