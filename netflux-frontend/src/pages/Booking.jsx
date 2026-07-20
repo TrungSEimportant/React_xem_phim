@@ -1,5 +1,5 @@
 // src/pages/Booking.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const TICKET_PRICE = 85000;
 const COMBO_PRICE = 65000;
@@ -10,14 +10,55 @@ function Booking({ movie, user, onCancel, onSuccess }) {
   const [comboCount, setComboCount] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState('Chuyển khoản');
 
-  // --- STATE QUẢN LÝ HIỂN THỊ MODAL QR & LOADING ---
+  // --- STATE QUẢN LÝ GHẾ ĐÃ ĐẶT VÀ HIỂN THỊ MODAL ---
+  const [bookedSeats, setBookedSeats] = useState([]);
   const [showQRModal, setShowQRModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const rows = ['A', 'B', 'C', 'D', 'E'];
   const cols = [1, 2, 3, 4, 5, 6, 7, 8];
 
+  // ================= TẢI DỮ LIỆU GHẾ ĐÃ ĐẶT TỪ API =================
+  useEffect(() => {
+    if (!selectedTime) {
+      setBookedSeats([]);
+      return;
+    }
+
+    const fetchBookedSeats = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/bookings');
+        const data = await res.json();
+        
+        if (data.success && data.bookings) {
+          let takenSeats = [];
+          data.bookings.forEach(booking => {
+            // Lọc các đơn đặt vé trùng ID phim và trùng Khung giờ chiếu
+            if (String(booking.movieId) === String(movie.id) && booking.showtime === selectedTime) {
+              if (Array.isArray(booking.seats)) {
+                takenSeats = [...takenSeats, ...booking.seats];
+              }
+            }
+          });
+          setBookedSeats(takenSeats);
+        }
+      } catch (err) {
+        console.error("Lỗi khi tải danh sách ghế đã đặt:", err);
+      }
+    };
+
+    fetchBookedSeats();
+  }, [movie.id, selectedTime]);
+
+  const handleTimeChange = (time) => {
+    setSelectedTime(time);
+    setSelectedSeats([]); // Xóa các ghế đang chọn nếu người dùng đổi sang suất chiếu khác
+  };
+
   const toggleSeat = (seat) => {
+    // Ngăn chặn việc click vào ghế đã đặt (phòng trường hợp lỗi UI)
+    if (bookedSeats.includes(seat)) return;
+
     if (selectedSeats.includes(seat)) {
       setSelectedSeats(selectedSeats.filter(s => s !== seat));
     } else {
@@ -56,7 +97,6 @@ function Booking({ movie, user, onCancel, onSuccess }) {
       comboCount: comboCount,
       totalPrice: totalPrice,
       paymentMethod: paymentMethod,
-      // THÊM TRƯỜNG STATUS VÀO ĐÂY:
       status: paymentMethod === 'Chuyển khoản' ? 'Đang xử lý...' : 'Chờ thanh toán',
       bookedAt: new Date().toLocaleString('vi-VN') 
     };
@@ -116,7 +156,7 @@ function Booking({ movie, user, onCancel, onSuccess }) {
           {(movie.showtimes || ["10:00", "14:00", "19:00"]).map(time => (
             <button
               key={time}
-              onClick={() => setSelectedTime(time)}
+              onClick={() => handleTimeChange(time)}
               style={{
                 padding: '10px 24px',
                 background: selectedTime === time ? '#E50914' : '#333',
@@ -148,21 +188,29 @@ function Booking({ movie, user, onCancel, onSuccess }) {
               {cols.map(col => {
                 const seatCode = `${row}${col}`;
                 const isSelected = selectedSeats.includes(seatCode);
+                const isBooked = bookedSeats.includes(seatCode);
+
                 return (
                   <button
                     key={col}
+                    disabled={isBooked} // Khóa nút nếu đã được đặt trước đó
                     onClick={() => toggleSeat(seatCode)}
                     style={{
                       width: '36px',
                       height: '36px',
-                      background: isSelected ? '#E50914' : '#444',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
+                      // CẬP NHẬT MÀU SẮC TRỰC QUAN HƠN:
+                      // Ghế đã đặt: Đen nhạt | Đang chọn: Đỏ tươi | Ghế trống: Xám sáng nổi bật
+                      background: isBooked ? '#1a1a1a' : (isSelected ? '#E50914' : '#d8d8d8'),
+                      // Đổi màu text tương ứng để người dùng dễ đọc chữ số trên ghế
+                      color: isBooked ? '#444' : (isSelected ? '#fff' : '#111'),
+                      border: isBooked ? '1px solid #333' : 'none',
+                      borderRadius: '6px',
+                      cursor: isBooked ? 'not-allowed' : 'pointer',
                       fontSize: '12px',
                       fontWeight: 'bold',
-                      transition: 'all 0.1s'
+                      transition: 'all 0.2s',
+                      textDecoration: isBooked ? 'line-through' : 'none', // Gạch ngang số nếu đã mua
+                      opacity: isBooked ? 0.6 : 1 // Làm mờ nhẹ ghế đã đặt
                     }}
                   >
                     {col}
@@ -173,10 +221,17 @@ function Booking({ movie, user, onCancel, onSuccess }) {
           ))}
         </div>
 
-        {/* Chú thích ghế */}
+        {/* Chú thích ghế (Legend) */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', fontSize: '13px', color: '#aaa', marginBottom: '4px' }}>
-          <div><span style={{ display: 'inline-block', width: '15px', height: '15px', background: '#444', borderRadius: '3px', marginRight: '6px', verticalAlign: 'middle' }}></span> Ghế trống</div>
-          <div><span style={{ display: 'inline-block', width: '15px', height: '15px', background: '#E50914', borderRadius: '3px', marginRight: '6px', verticalAlign: 'middle' }}></span> Ghế đang chọn</div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span style={{ display: 'inline-block', width: '15px', height: '15px', background: '#d8d8d8', borderRadius: '3px', marginRight: '6px' }}></span> Ghế trống
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span style={{ display: 'inline-block', width: '15px', height: '15px', background: '#E50914', borderRadius: '3px', marginRight: '6px' }}></span> Ghế đang chọn
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span style={{ display: 'inline-block', width: '15px', height: '15px', background: '#1a1a1a', border: '1px solid #333', opacity: 0.6, borderRadius: '3px', marginRight: '6px' }}></span> Ghế đã đặt
+          </div>
         </div>
 
         {/* 3. CHỌN COMBO BẮP NƯỚC */}
@@ -274,7 +329,6 @@ function Booking({ movie, user, onCancel, onSuccess }) {
           <span style={{ fontSize: '26px', fontWeight: 'bold', color: '#E50914' }}>{totalPrice.toLocaleString('vi-VN')} đ</span>
         </div>
 
-        {/* Gọi handleInitialConfirm thay vì hàm submit API cũ */}
         <button 
           onClick={handleInitialConfirm}
           style={{ 
@@ -310,7 +364,6 @@ function Booking({ movie, user, onCancel, onSuccess }) {
             <p style={{ color: '#555', marginBottom: '25px', fontSize: '14px' }}>Mở ứng dụng ngân hàng và quét mã bên dưới</p>
             
             <div style={{ padding: '10px', background: '#f9f9f9', display: 'inline-block', borderRadius: '12px', border: '1px solid #ddd' }}>
-              {/* API tạo QR động theo tổng tiền. Thay đổi STK/Ngân hàng theo ý bạn nếu có URL VietQR riêng */}
               <img 
                 src={`https://api.vietqr.io/image/970436-123456789-9rQo3wL.jpg?amount=${totalPrice}&addInfo=Thanh toan ve xem phim`} 
                 alt="QR Thanh Toán" 
@@ -330,7 +383,6 @@ function Booking({ movie, user, onCancel, onSuccess }) {
                 Hủy giao dịch
               </button>
               
-              {/* Nút xác nhận lần 2 để gọi API */}
               <button 
                 onClick={submitBooking}
                 disabled={isProcessing}
